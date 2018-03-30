@@ -88,6 +88,12 @@ functions:
        - http:
           path: fibonacci 
           method: GET
+  externalJson:
+    handler: com.serverless.QueryExternalHandler::handleRequest
+    events:
+       - http:
+          path: queryJson/{id} 
+          method: GET
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

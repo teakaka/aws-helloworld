@@ -78,12 +78,14 @@ endpoints:
   POST - https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/customers
   DELETE - https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/customers/{name}
   GET - https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/fibonacci
+  GET - https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/queryJson/{id}
 functions:
   hello: customer-dev-hello
   getCustomers: customer-dev-getCustomers
   addCustomer: customer-dev-addCustomer
   deleteCustomer: customer-dev-deleteCustomer
   fibonacci: customer-dev-fibonacci
+  externalJson: customer-dev-externalJson
 Serverless: Removing old service versions...
 ```
 ## TEST
@@ -110,6 +112,10 @@ $ curl -X DELETE https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/custom
 5. Display the first 5 numbers in Fibonacci Array
 ```sh
 $ curl https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/fibonacci?n=5
+```
+6. Query external REST API JSON data with id = 3
+```sh
+$ curl https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/queryJson/3
 ```
 ## Todos
  - Write MORE Tests
