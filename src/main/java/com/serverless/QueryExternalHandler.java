@@ -17,21 +17,14 @@ import org.apache.log4j.Logger;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.Iterator;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import data.ExternalUser;
 
 public class QueryExternalHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 	private static final Logger LOG = Logger.getLogger(QueryExternalHandler.class);
 
-	private static final String EXTERNAL_URL = "https://jsonplaceholder.typicode.com/posts";
+	private static final String EXTERNAL_URL = "http://jsonplaceholder.typicode.com/posts";
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
@@ -56,20 +49,20 @@ public class QueryExternalHandler implements RequestHandler<Map<String, Object>,
 		try {
 			URL url = new URL(EXTERNAL_URL);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
 
 			if (conn.getResponseCode() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
-			JsonNode json = mapper.readTree(conn.getInputStream());
-			List<ExternalUser> users = mapper.readValue(new BufferedReader(new InputStreamReader(conn.getInputStream())), new TypeReference<List<ExternalUser>>(){});
-			
-			LOG.info("********Parsed Json successfully " + users.size());
+			List<ExternalUser> users = mapper.readValue(
+					new BufferedReader(new InputStreamReader(conn.getInputStream())),
+					new TypeReference<List<ExternalUser>>() {
+					});
+
+			LOG.info("Parsed Json successfully " + (users == null ? "null" : users.size()));
 			conn.disconnect();
-			
+
 			return buildResponse(200, queryById(Integer.valueOf(id).intValue(), users), input);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -80,16 +73,16 @@ public class QueryExternalHandler implements RequestHandler<Map<String, Object>,
 		} catch (NumberFormatException e) {
 			return handleException(404, "Id is not integer", input);
 		}
-		
+
 	}
 
 	private List<ExternalUser> queryById(int id, List<ExternalUser> users) {
 		List<ExternalUser> result = new ArrayList<>();
-		
+
 		if (users == null) {
 			return result;
 		}
-		
+
 		for (ExternalUser u : users) {
 			if (u.getId().intValue() == id) {
 				result.add(u);
@@ -104,9 +97,10 @@ public class QueryExternalHandler implements RequestHandler<Map<String, Object>,
 		headers.put("Content-Type", "application/json");
 
 		return ApiGatewayResponse.builder().setStatusCode(statusCode)
-		.setObjectBody(new Response("Success", input)).setHeaders(headers).build();
+				.setObjectBody(new QueryExternalResponse("Success", input, users))
+				.setHeaders(headers).build();
 	}
-	
+
 	private ApiGatewayResponse handleException(int statusCode, String message, Map<String, Object> input) {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("X-Powered-By", "AWS Lambda & Serverless");
@@ -115,4 +109,5 @@ public class QueryExternalHandler implements RequestHandler<Map<String, Object>,
 		return ApiGatewayResponse.builder().setStatusCode(statusCode).setObjectBody(new Response(message, input))
 				.setHeaders(headers).build();
 	}
+
 }

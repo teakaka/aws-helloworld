@@ -18,25 +18,29 @@ public class MathHandler implements RequestHandler<Map<String, Object>, ApiGatew
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		BasicConfigurator.configure();
 		LOG.info("received: " + input);
-
+		LOG.info("Context: MemoryLimitInMB" + context.getMemoryLimitInMB() + "; LambdaLogger = "+context.getLogger() 
+				+ "; getAWSRequestId = " + context.getAwsRequestId() + "; getIdentity = " + context.getIdentity().toString()
+				+ "; getLogStreamName = " + context.getLogStreamName() + "; getRemainingTimeInMillis = " + context.getRemainingTimeInMillis()
+				+ "getLogGroupName = " + context.getLogGroupName() + "; getInvokedFunctionArn = " + context.getInvokedFunctionArn());
+		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("X-Powered-By", "AWS Lambda & Serverless");
 		headers.put("Content-Type", "application/json");
 		
 		Map<String, String> queryStringParameters = (Map<String, String>) input.get("queryStringParameters");
 		if(queryStringParameters == null || queryStringParameters.size() == 0) {
-			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody("Please enter a positive integer as query string parameter").setHeaders(headers).build();
+			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody(new Response("Please enter a positive integer as query string parameter", input)).setHeaders(headers).build();
 		}
 		
 		int n = -1;
 		try{
 			n = Integer.valueOf(queryStringParameters.get("n")).intValue();
 		} catch (NumberFormatException e) {
-			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody("Please enter a positive integer as query string parameter").setHeaders(headers).build();
+			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody(new Response("Please enter a positive integer as query string parameter", input)).setHeaders(headers).build();
 		}
 		
 		if (n <= 0) {
-			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody("Please enter a positive integer as query string parameter").setHeaders(headers).build();
+			return ApiGatewayResponse.builder().setStatusCode(404).setObjectBody(new Response("Please enter a positive integer as query string parameter", input)).setHeaders(headers).build();
 		} 
 		
 		List<Integer> fibonacci = new ArrayList<>();
@@ -59,6 +63,7 @@ public class MathHandler implements RequestHandler<Map<String, Object>, ApiGatew
 				.setObjectBody(new MathResponse("Fibonacci array: ", input, fibonacci))
 				.setHeaders(headers).build();
 	}
+	
 	
 	//This helper returns the Nth fibonacci number. starts with 1, 1, ...
 	//It is required to return a Fibonacci array, the straightforward iterative calculation is fastest way to get the result
