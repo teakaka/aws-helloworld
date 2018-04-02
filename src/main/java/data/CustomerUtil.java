@@ -99,11 +99,13 @@ public class CustomerUtil {
 					.setParameter("name", name)
 					.getResultList();
 			
-			if (customers == null || customers.isEmpty()) {
+			if (customers == null || customers.size() == 0) {
 				return "Cannot find this customer " + name;
 			}
 			
-			session.delete(customers.get(0));
+			for (Customer c : customers) {
+				session.delete(c);
+			}			
 			session.getTransaction().commit();
 			LOG.info("Customer " + name + " was removed");
 			return "SUCCESS";

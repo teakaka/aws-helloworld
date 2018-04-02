@@ -86,6 +86,11 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 		headers.put("X-Powered-By", "AWS Lambda & Serverless");
 		headers.put("Content-Type", "application/json");
 
+		if(input.get("body") == null) {
+			return ApiGatewayResponse.builder().setStatusCode(500)
+					.setObjectBody("Please provide the customer name for creation.").setHeaders(headers).build();
+		}
+		
 		String name = null;
 		try {
 			ObjectMapper mapper = new ObjectMapper();

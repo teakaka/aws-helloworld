@@ -120,6 +120,7 @@ $ curl https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/dev/queryJson/3
 ## Todos
  - Write MORE Tests
  - Add Night Mode
+ - Fix known issues. 
 
 License
 ----
