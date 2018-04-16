@@ -22,9 +22,9 @@ Note: Choose your own db-instance-identifier, engine, db-name, master master-use
 ```sh
 $ aws rds create-db-instance \
     --db-instance-identifier MySQLDBInstanceName \
-    --db-instance-class db.r3.large \
+    --db-instance-class db.m1.small \
     --engine MySQL \
-    --port 3006 \
+    --port 3306 \
     --allocated-storage 5 \
     --db-name customer \
     --master-username master \
@@ -32,6 +32,8 @@ $ aws rds create-db-instance \
     --backup-retention-period 3 \
     --profile admin
 ```
+Make sure you have set the security group for the instance you just created. Go to AWS RDS > Instances, select the link under "Security groups". Select "Inbound" tab, if the rules do not allow your access. Please click "Edit". Delete previous rules. Click "Add Rule", set Type to "All traffic", set Source to "Anywhere". Click Save.
+
 You can use any SQL client to verify the database is successfully created. The jdbc connection url will be similar to this: jdbc:mysql://MySQLDBInstanceName.XXXXXXXX.us-east-1.rds.amazonaws.com/customer
 
 ### Create customer Table in DB
